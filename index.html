@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Archetype Invocation</title>
+  <style>
+    :root{
+      --bg0:#04060b;
+      --bg1:#070b14;
+      --ink: rgba(245,245,255,.92);
+      --muted: rgba(245,245,255,.72);
+
+      /* spotlight controls */
+      --x: 50%;
+      --y: 50%;
+      --r: 7.5rem; /* mobile-first radius */
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      background: var(--bg0);
+      color: var(--ink);
+      overflow:hidden;
+      font-family:
+        "Iowan Old Style","Palatino Linotype","Book Antiqua",Palatino,
+        "Cormorant Garamond",Garamond,Georgia,serif;
+    }
+
+    /* Subtle milky-way-ish background (quiet, not loud) */
+    .cosmos{
+      position:fixed; inset:0;
+      background:
+        radial-gradient(1200px 800px at 70% 30%,
+          rgba(140,170,255,.10) 0%,
+          rgba(70,90,170,.06) 35%,
+          rgba(0,0,0,0) 60%),
+        radial-gradient(900px 700px at 25% 65%,
+          rgba(255,230,190,.08) 0%,
+          rgba(120,90,60,.04) 30%,
+          rgba(0,0,0,0) 62%),
+        linear-gradient(180deg, var(--bg1), var(--bg0));
+      filter: saturate(1.05) contrast(1.02);
+    }
+
+    /* faint “dust lane” */
+    .cosmos::before{
+      content:"";
+      position:absolute; inset:-20%;
+      background:
+        radial-gradient(closest-side at 60% 40%,
+          rgba(255,255,255,.06) 0%,
+          rgba(255,255,255,.02) 38%,
+          rgba(0,0,0,0) 62%),
+        radial-gradient(closest-side at 40% 55%,
+          rgba(120,160,255,.05) 0%,
+          rgba(0,0,0,0) 62%);
+      transform: rotate(-12deg);
+      opacity:.85;
+      mix-blend-mode: screen;
+      pointer-events:none;
+    }
+
+    /* subtle grain/noise (no images) */
+    .cosmos::after{
+      content:"";
+      position:absolute; inset:0;
+      background-image:
+        repeating-linear-gradient(
+          0deg,
+          rgba(255,255,255,.018) 0px,
+          rgba(255,255,255,0) 1px,
+          rgba(255,255,255,0) 3px
+        );
+      opacity:.12;
+      mix-blend-mode: overlay;
+      pointer-events:none;
+    }
+
+    main{
+      position:relative;
+      height:100%;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      padding: 18vh 6.5vw 10vh;
+      gap: 1.4rem;
+      text-align:center;
+    }
+
+    /* Title: invisible until spotlight reveals parts under pointer */
+    .title{
+      margin:0;
+      line-height: .92;
+      letter-spacing: 0.02em;
+      font-weight: 500;
+
+      /* responsive size (mobile-first) */
+      font-size: clamp(2.8rem, 8.5vw, 5.2rem);
+
+      /* keep layout visible but glyphs hidden by default */
+      color: transparent;
+
+      /* paint “ink” using background clipped to text */
+      background: radial-gradient(
+        circle var(--r) at var(--x) var(--y),
+        rgba(245,245,255,.94) 0%,
+        rgba(245,245,255,.86) 18%,
+        rgba(245,245,255,.22) 40%,
+        rgba(245,245,255,0) 62%
+      );
+      -webkit-background-clip: text;
+      background-clip: text;
+
+      /* mask ensures ONLY hovered/near-cursor portion shows, not entire word */
+      -webkit-mask-image: radial-gradient(
+        circle var(--r) at var(--x) var(--y),
+        rgba(0,0,0,1) 0%,
+        rgba(0,0,0,.9) 22%,
+        rgba(0,0,0,.25) 45%,
+        rgba(0,0,0,0) 62%
+      );
+      mask-image: radial-gradient(
+        circle var(--r) at var(--x) var(--y),
+        rgba(0,0,0,1) 0%,
+        rgba(0,0,0,.9) 22%,
+        rgba(0,0,0,.25) 45%,
+        rgba(0,0,0,0) 62%
+      );
+
+      /* softer feel */
+      text-shadow: 0 0 22px rgba(200,220,255,.08);
+      user-select:none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .timer{
+      font-size: clamp(.95rem, 3.2vw, 1.1rem);
+      color: var(--muted);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      font-variant-numeric: tabular-nums;
+      user-select:none;
+    }
+
+    /* Make spotlight slightly larger on wider screens */
+    @media (min-width: 768px){
+      :root{ --r: 9.5rem; }
+      main{ padding: 16vh 8vw 10vh; gap: 1.6rem; }
+    }
+
+    /* Respect reduced motion (no fancy transitions) */
+    @media (prefers-reduced-motion: no-preference){
+      .title{
+        transition: background-position 60ms linear, -webkit-mask-position 60ms linear;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="cosmos" aria-hidden="true"></div>
+
+  <main>
+    <!-- TEXT #1 (title): words on separate lines -->
+    <h1 class="title" id="title">
+      Archetype<br />Invocation
+    </h1>
+
+    <!-- TEXT #2 (timer): small, minimal footprint -->
+    <div class="timer" id="timer" aria-live="polite">—</div>
+  </main>
+
+  <script>
+    // ===== Countdown to 11:59 PM 31 Dec 2026 (Asia/Kolkata, UTC+05:30, no DST) =====
+    // 2026-12-31 23:59:00 IST == 2026-12-31 18:29:00 UTC
+    const targetUTC = Date.UTC(2026, 11, 31, 18, 29, 0);
+
+    const elTimer = document.getElementById("timer");
+    function pad2(n){ return String(n).padStart(2, "0"); }
+
+    function tick(){
+      const now = Date.now();
+      let ms = targetUTC - now;
+
+      if (ms <= 0){
+        elTimer.textContent = "00 DAYS • 00:00:00";
+        return;
+      }
+
+      const totalSeconds = Math.floor(ms / 1000);
+      const days = Math.floor(totalSeconds / 86400);
+      const rem = totalSeconds % 86400;
+      const hours = Math.floor(rem / 3600);
+      const minutes = Math.floor((rem % 3600) / 60);
+      const seconds = rem % 60;
+
+      elTimer.textContent = `${days} DAYS • ${pad2(hours)}:${pad2(minutes)}:${pad2(seconds)}`;
+    }
+    tick();
+    setInterval(tick, 1000);
+
+    // ===== Spotlight reveal follows pointer/touch =====
+    const title = document.getElementById("title");
+
+    function setSpotlight(clientX, clientY){
+      const rect = title.getBoundingClientRect();
+      // Clamp to title box so it behaves nicely
+      const x = Math.min(Math.max(clientX - rect.left, 0), rect.width);
+      const y = Math.min(Math.max(clientY - rect.top, 0), rect.height);
+      title.style.setProperty("--x", (x / rect.width) * 100 + "%");
+      title.style.setProperty("--y", (y / rect.height) * 100 + "%");
+    }
+
+    // Desktop
+    window.addEventListener("mousemove", (e) => setSpotlight(e.clientX, e.clientY), { passive:true });
+
+    // Mobile: touchstart/touchmove
+    window.addEventListener("touchstart", (e) => {
+      if (!e.touches || !e.touches[0]) return;
+      setSpotlight(e.touches[0].clientX, e.touches[0].clientY);
+    }, { passive:true });
+
+    window.addEventListener("touchmove", (e) => {
+      if (!e.touches || !e.touches[0]) return;
+      setSpotlight(e.touches[0].clientX, e.touches[0].clientY);
+    }, { passive:true });
+
+    // Default “quiet” reveal position centered
+    // (Already set via CSS vars; this keeps it stable on load)
+  </script>
+</body>
+</html>
