@@ -1,100 +1,237 @@
-<!-- Welcome to Archetype Invocation -->
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Archetype Invocation</title>
   <style>
-    :root{
-      --bg0:#04060b;
-      --bg1:#070b14;
-      --ink: rgba(245,245,255,.92);
-      --muted: rgba(245,245,255,.72);
+    :root {
+      --bg0: #04060b;
+      --bg1: #070b14;
+      --ink: rgba(245, 245, 255, .92);
+      --muted: rgba(245, 245, 255, .72);
 
       /* spotlight controls */
       --x: 50%;
       --y: 50%;
-      --r: 7.5rem; /* mobile-first radius */
+      --r: 7.5rem;
+      /* mobile-first radius */
     }
 
-    *{ box-sizing:border-box; }
-    html,body{ height:100%; }
-    body{
-      margin:0;
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+    }
+
+    body {
+      margin: 0;
       background: var(--bg0);
       color: var(--ink);
-      overflow:hidden;
+      overflow: hidden;
       font-family:
-        "Iowan Old Style","Palatino Linotype","Book Antiqua",Palatino,
-        "Cormorant Garamond",Garamond,Georgia,serif;
+        "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino,
+        "Cormorant Garamond", Garamond, Georgia, serif;
     }
 
+
+    @keyframes shimmer {
+      0% {
+        filter: drop-shadow(0 0 6px rgba(200, 220, 255, 0.12));
+      }
+
+      50% {
+        filter: drop-shadow(0 0 14px rgba(220, 235, 255, 0.28));
+      }
+
+      100% {
+        filter: drop-shadow(0 0 6px rgba(200, 220, 255, 0.12));
+      }
+    }
+
+    .cosmos {
+      z-index: 0;
+    }
+
+    .stars {
+      z-index: 1;
+      mix-blend-mode: screen;
+    }
+
+    main {
+      position: relative;
+      z-index: 2;
+    }
+
+
     /* Subtle milky-way-ish background (quiet, not loud) */
-    .cosmos{
-      position:fixed; inset:0;
+    .cosmos {
+      position: fixed;
+      inset: 0;
       background:
         radial-gradient(1200px 800px at 70% 30%,
-          rgba(140,170,255,.10) 0%,
-          rgba(70,90,170,.06) 35%,
-          rgba(0,0,0,0) 60%),
+          rgba(140, 170, 255, .10) 0%,
+          rgba(70, 90, 170, .06) 35%,
+          rgba(0, 0, 0, 0) 60%),
         radial-gradient(900px 700px at 25% 65%,
-          rgba(255,230,190,.08) 0%,
-          rgba(120,90,60,.04) 30%,
-          rgba(0,0,0,0) 62%),
+          rgba(255, 230, 190, .08) 0%,
+          rgba(120, 90, 60, .04) 30%,
+          rgba(0, 0, 0, 0) 62%),
         linear-gradient(180deg, var(--bg1), var(--bg0));
       filter: saturate(1.05) contrast(1.02);
     }
 
     /* faint “dust lane” */
-    .cosmos::before{
-      content:"";
-      position:absolute; inset:-20%;
+    .cosmos::before {
+      content: "";
+      position: absolute;
+      inset: -20%;
       background:
         radial-gradient(closest-side at 60% 40%,
-          rgba(255,255,255,.06) 0%,
-          rgba(255,255,255,.02) 38%,
-          rgba(0,0,0,0) 62%),
+          rgba(255, 255, 255, .06) 0%,
+          rgba(255, 255, 255, .02) 38%,
+          rgba(0, 0, 0, 0) 62%),
         radial-gradient(closest-side at 40% 55%,
-          rgba(120,160,255,.05) 0%,
-          rgba(0,0,0,0) 62%);
+          rgba(120, 160, 255, .05) 0%,
+          rgba(0, 0, 0, 0) 62%);
       transform: rotate(-12deg);
-      opacity:.85;
+      opacity: .85;
       mix-blend-mode: screen;
-      pointer-events:none;
+      pointer-events: none;
     }
 
     /* subtle grain/noise (no images) */
-    .cosmos::after{
-      content:"";
-      position:absolute; inset:0;
+    .cosmos::after {
+      content: "";
+      position: absolute;
+      inset: 0;
       background-image:
-        repeating-linear-gradient(
-          0deg,
-          rgba(255,255,255,.018) 0px,
-          rgba(255,255,255,0) 1px,
-          rgba(255,255,255,0) 3px
-        );
-      opacity:.12;
+        repeating-linear-gradient(0deg,
+          rgba(255, 255, 255, .018) 0px,
+          rgba(255, 255, 255, 0) 1px,
+          rgba(255, 255, 255, 0) 3px);
+      opacity: .12;
       mix-blend-mode: overlay;
-      pointer-events:none;
+      pointer-events: none;
     }
 
-    main{
-      position:relative;
-      height:100%;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:center;
-      padding: 18vh 6.5vw 10vh;
-      gap: 1.4rem;
-      text-align:center;
+
+    /* ===== Star field ===== */
+
+    .stars {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
     }
+
+    .stars {
+      filter: blur(0.15px);
+    }
+
+    /* base star */
+    .stars::before,
+    .stars::after {
+      content: "";
+      position: absolute;
+      inset: -60%;
+      background-repeat: repeat;
+      animation: twinkle 20s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    /* Layer 1: sparse, brighter, closer */
+    .stars::before {
+      background-image:
+        radial-gradient(1px 1px at 7% 13%, rgba(255, 255, 255, .75) 0 1px, transparent 2px),
+        radial-gradient(1.5px 1.5px at 19% 67%, rgba(255, 255, 255, .65) 0 1.5px, transparent 3px),
+        radial-gradient(1px 1px at 31% 29%, rgba(255, 255, 255, .7) 0 1px, transparent 2px),
+        radial-gradient(2px 2px at 47% 83%, rgba(255, 255, 255, .6) 0 2px, transparent 4px),
+        radial-gradient(1px 1px at 58% 41%, rgba(255, 255, 255, .8) 0 1px, transparent 2px),
+        radial-gradient(1.5px 1.5px at 73% 19%, rgba(255, 255, 255, .65) 0 1.5px, transparent 3px),
+        radial-gradient(1px 1px at 89% 61%, rgba(255, 255, 255, .7) 0 1px, transparent 2px);
+      background-size: 233px 257px;
+      /* non-round, non-matching */
+      opacity: .55;
+    }
+
+    /* Layer 2: denser, dimmer, farther */
+    .stars::after {
+      background-image:
+        radial-gradient(1px 1px at 5% 48%, rgba(255, 255, 255, .22) 0 1px, transparent 2px),
+        radial-gradient(1px 1px at 14% 12%, rgba(255, 255, 255, .18) 0 1px, transparent 2px),
+        radial-gradient(1px 1px at 26% 77%, rgba(255, 255, 255, .2) 0 1px, transparent 2px),
+        radial-gradient(1px 1px at 38% 33%, rgba(255, 255, 255, .16) 0 1px, transparent 2px),
+        radial-gradient(1px 1px at 49% 91%, rgba(255, 255, 255, .21) 0 1px, transparent 2px),
+        radial-gradient(1px 1px at 61% 55%, rgba(255, 255, 255, .17) 0 1px, transparent 2px),
+        radial-gradient(1px 1px at 72% 18%, rgba(255, 255, 255, .19) 0 1px, transparent 2px),
+        radial-gradient(1px 1px at 84% 69%, rgba(255, 255, 255, .2) 0 1px, transparent 2px),
+        radial-gradient(1px 1px at 96% 42%, rgba(255, 255, 255, .18) 0 1px, transparent 2px);
+      background-size: 179px 193px;
+      /* different primes */
+      animation-duration: 32s;
+      opacity: .4;
+    }
+
+
+    @keyframes twinkle {
+      0% {
+        opacity: .35;
+      }
+
+      50% {
+        opacity: .55;
+      }
+
+      100% {
+        opacity: .35;
+      }
+    }
+
+
+    main {
+      position: relative;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 18vh 6.5vw 10vh;
+      text-align: center;
+    }
+
+    /* Timer pinned to bottom */
+    .timer {
+      position: fixed;
+      left: 50%;
+      bottom: calc(env(safe-area-inset-bottom) + 90px);
+      transform: translateX(-50%);
+
+      font-size: clamp(0.8rem, 2.9vw, 0.8rem);
+      /* smaller */
+      line-height: 1;
+      color: rgba(245, 245, 255, .6);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      font-variant-numeric: tabular-nums;
+      user-select: none;
+
+      /* sans-serif stays */
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+        "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+
+      /* subtle separation from edge */
+      padding-bottom: 6px;
+    }
+
 
     /* Title: invisible until spotlight reveals parts under pointer */
-    .title{
-      margin:0;
+    .title {
+      margin: 0;
       line-height: .92;
       letter-spacing: 0.02em;
       font-weight: 500;
@@ -106,56 +243,51 @@
       color: transparent;
 
       /* paint “ink” using background clipped to text */
-      background: radial-gradient(
-        circle var(--r) at var(--x) var(--y),
-        rgba(245,245,255,.94) 0%,
-        rgba(245,245,255,.86) 18%,
-        rgba(245,245,255,.22) 40%,
-        rgba(245,245,255,0) 62%
-      );
+      background: radial-gradient(circle var(--r) at var(--x) var(--y),
+          rgba(245, 245, 255, .94) 0%,
+          rgba(245, 245, 255, .86) 18%,
+          rgba(245, 245, 255, .22) 40%,
+          rgba(245, 245, 255, 0) 62%);
       -webkit-background-clip: text;
       background-clip: text;
 
       /* mask ensures ONLY hovered/near-cursor portion shows, not entire word */
-      -webkit-mask-image: radial-gradient(
-        circle var(--r) at var(--x) var(--y),
-        rgba(0,0,0,1) 0%,
-        rgba(0,0,0,.9) 22%,
-        rgba(0,0,0,.25) 45%,
-        rgba(0,0,0,0) 62%
-      );
-      mask-image: radial-gradient(
-        circle var(--r) at var(--x) var(--y),
-        rgba(0,0,0,1) 0%,
-        rgba(0,0,0,.9) 22%,
-        rgba(0,0,0,.25) 45%,
-        rgba(0,0,0,0) 62%
-      );
+      -webkit-mask-image: radial-gradient(circle var(--r) at var(--x) var(--y),
+          rgba(0, 0, 0, 1) 0%,
+          rgba(0, 0, 0, .9) 22%,
+          rgba(0, 0, 0, .25) 45%,
+          rgba(0, 0, 0, 0) 62%);
+      mask-image: radial-gradient(circle var(--r) at var(--x) var(--y),
+          rgba(0, 0, 0, 1) 0%,
+          rgba(0, 0, 0, .9) 22%,
+          rgba(0, 0, 0, .25) 45%,
+          rgba(0, 0, 0, 0) 62%);
+
+      /* ✨ shimmer */
+      animation: shimmer 6s ease-in-out infinite;
 
       /* softer feel */
-      text-shadow: 0 0 22px rgba(200,220,255,.08);
-      user-select:none;
+      text-shadow: 0 0 22px rgba(200, 220, 255, .08);
+      user-select: none;
       -webkit-tap-highlight-color: transparent;
     }
 
-    .timer{
-      font-size: clamp(.95rem, 3.2vw, 1.1rem);
-      color: var(--muted);
-      letter-spacing: .08em;
-      text-transform: uppercase;
-      font-variant-numeric: tabular-nums;
-      user-select:none;
-    }
 
     /* Make spotlight slightly larger on wider screens */
-    @media (min-width: 768px){
-      :root{ --r: 9.5rem; }
-      main{ padding: 16vh 8vw 10vh; gap: 1.6rem; }
+    @media (min-width: 768px) {
+      :root {
+        --r: 9.5rem;
+      }
+
+      main {
+        padding: 16vh 8vw 10vh;
+        gap: 1.6rem;
+      }
     }
 
     /* Respect reduced motion (no fancy transitions) */
-    @media (prefers-reduced-motion: no-preference){
-      .title{
+    @media (prefers-reduced-motion: no-preference) {
+      .title {
         transition: background-position 60ms linear, -webkit-mask-position 60ms linear;
       }
     }
@@ -164,6 +296,7 @@
 
 <body>
   <div class="cosmos" aria-hidden="true"></div>
+  <div class="stars" aria-hidden="true"></div>
 
   <main>
     <!-- TEXT #1 (title): words on separate lines -->
@@ -181,13 +314,13 @@
     const targetUTC = Date.UTC(2026, 11, 31, 18, 29, 0);
 
     const elTimer = document.getElementById("timer");
-    function pad2(n){ return String(n).padStart(2, "0"); }
+    function pad2(n) { return String(n).padStart(2, "0"); }
 
-    function tick(){
+    function tick() {
       const now = Date.now();
       let ms = targetUTC - now;
 
-      if (ms <= 0){
+      if (ms <= 0) {
         elTimer.textContent = "00 DAYS • 00:00:00";
         return;
       }
@@ -207,7 +340,7 @@
     // ===== Spotlight reveal follows pointer/touch =====
     const title = document.getElementById("title");
 
-    function setSpotlight(clientX, clientY){
+    function setSpotlight(clientX, clientY) {
       const rect = title.getBoundingClientRect();
       // Clamp to title box so it behaves nicely
       const x = Math.min(Math.max(clientX - rect.left, 0), rect.width);
@@ -217,22 +350,22 @@
     }
 
     // Desktop
-    window.addEventListener("mousemove", (e) => setSpotlight(e.clientX, e.clientY), { passive:true });
+    window.addEventListener("mousemove", (e) => setSpotlight(e.clientX, e.clientY), { passive: true });
 
     // Mobile: touchstart/touchmove
     window.addEventListener("touchstart", (e) => {
       if (!e.touches || !e.touches[0]) return;
       setSpotlight(e.touches[0].clientX, e.touches[0].clientY);
-    }, { passive:true });
+    }, { passive: true });
 
     window.addEventListener("touchmove", (e) => {
       if (!e.touches || !e.touches[0]) return;
       setSpotlight(e.touches[0].clientX, e.touches[0].clientY);
-    }, { passive:true });
+    }, { passive: true });
 
     // Default “quiet” reveal position centered
     // (Already set via CSS vars; this keeps it stable on load)
   </script>
 </body>
-</html>
 
+</html>
